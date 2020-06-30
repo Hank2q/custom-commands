@@ -5,4 +5,4 @@ argument the repo will be created in the current directory and not the designate
 	-create the project directory in the specified dir
 	-create a README.md in the project dir
 	-automate github repository making with the same project name
-4 -run git commands to link with remote and add and commit and push
+	-run git commands to link with remote, add, commit and then push
