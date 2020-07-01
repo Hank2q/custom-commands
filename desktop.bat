@@ -1,1 +1,1 @@
-@cd C:\Users\HASSANIN\Desktop
+@cd %userprofile%\Desktop
