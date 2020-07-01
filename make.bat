@@ -1,2 +1,2 @@
-@dir 1> nul 2> %1
-@echo File: [%1] created
+@echo off
+@echo File: [%1] created 2> %1
