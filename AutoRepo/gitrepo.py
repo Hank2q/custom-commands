@@ -8,7 +8,7 @@ from pynput.keyboard import Controller, Key
 
 
 project_name = sys.argv[1]
-proj_parent = sys.argv[2]
+proj_parent = os.getcwd()
 
 
 # make project directory
@@ -42,10 +42,9 @@ os.system(f"echo # {project_name} > README.md")
 print(f'[GITHUB REPO SETUP]')
 github = False
 try:
-    # chrome_options = Options()
-    # chrome_options.add_argument("--headless")
-    # options = chrome_options
-    browser = webdriver.Chrome(port=9990)
+    chrome_options = Options()
+    chrome_options.add_argument("--headless")
+    browser = webdriver.Chrome(options=chrome_options, port=9990)
     browser.get("https://www.github.com/login")
 
     user = browser.find_element_by_xpath('//*[@id="login_field"]')
