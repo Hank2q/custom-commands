@@ -59,7 +59,7 @@ try:
         '#login > div.auth-form-body.u2f-auth-form-body.js-u2f-auth-form-body.mt-3 > span.u2f-enabled > form > button').click()
     sleep(1)
     keyboard = Controller()
-    keyboard.type('4265')
+    keyboard.type('computer pin')
 
     sleep(1.7)
     browser.get("https://www.github.com/new")

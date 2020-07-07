@@ -9,3 +9,5 @@
   a python script that automatically creats a project directory and set it up with git and link it to github using selenium web automation
   the batch file is to be used from the cmd prompt, providing the project name and path.
   
+# screenshot.bat
+  a command line command that takes screenshot py running a python script
