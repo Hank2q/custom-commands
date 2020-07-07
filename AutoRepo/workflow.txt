@@ -1,8 +1,0 @@
-1- type in the command line 'project' followed by the project name and if a dot was passed as a second
-argument the repo will be created in the current directory and not the designated file (pythonproj)
-2 -supply the name and the second arg if available to the python script
-3 -python script will:
-	-create the project directory in the specified dir
-	-create a README.md in the project dir
-	-automate github repository making with the same project name
-4 -run git commands to link with remote and add and commit and push
