@@ -2,7 +2,7 @@
   My custom commands for windows command prompt
   added the directory to PATH so that it works anywhere
 
-# make.bar
+# make.bat
   a custome command that makes a file, similar to the linux "touch" command
 
 # AutoRepo
