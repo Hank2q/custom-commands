@@ -8,7 +8,7 @@ from glob import glob as no_hidden
 
 def dir_size(dir):
     size = 0
-    for dirpath, dis, files in os.walk(dir):
+    for dirpath, _, files in os.walk(dir):
         for f in files:
             name = os.path.join(dirpath, f)
             if not os.path.islink(name):
@@ -17,14 +17,13 @@ def dir_size(dir):
 
 
 def list_dir(args):
-    # print(args)
 
     if args.all:
         dirList = os.listdir(args.path)  # list with hidden items
+        dirList = list(map(lambda d: os.path.join(args.path, d), dirList))
     else:
         dirList = no_hidden(
             os.path.join(args.path, '*'))  # list without hidden items
-        dirList = [os.path.split(f)[-1] for f in dirList]
 
     result = []
     files = 0
@@ -32,6 +31,7 @@ def list_dir(args):
     dirs = 0
     total_d = 0
     for f in dirList:
+        name = os.path.split(f)[1]
         if os.path.isdir(f):
             dirs += 1
             if args.files:
@@ -39,9 +39,9 @@ def list_dir(args):
             size = dir_size(f)
             total_d += size
             if args.size:
-                result.append(f'[{f}] - {round(size/1000, 2)} kB')
+                result.append(f'[{name}] - {round(size/1000, 2)} kB')
             else:
-                result.append(f'[{f}]')
+                result.append(f'[{name}]')
         else:
             files += 1
             if args.folders:
@@ -49,9 +49,9 @@ def list_dir(args):
             size = os.path.getsize(f)
             total_f += size
             if args.size:
-                result.append(f'{f} - {round(size/1000, 2)} kB')
+                result.append(f'{name} - {round(size/1000, 2)} kB')
             else:
-                result.append(f)
+                result.append(name)
     total_z = round((total_f + total_d) / 1000, 2)
     total_f = round(total_f/1000, 2)
     total_d = round(total_d/1000, 2)
