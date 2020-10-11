@@ -6,13 +6,34 @@ import sys
 from glob import glob as no_hidden
 
 
-def dir_size(dir):
+def bytes_parser(number, unit='Bytes'):
+    units = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB']
+    if unit not in units:
+        return number, unit
+    if number > 1024:
+        number = round(number/1000, 2)
+        nextI = units.index(unit) + 1
+        if nextI == len(units):
+            return number, unit
+        unit = units[nextI]
+        number, unit = bytes_parser(number, unit)
+    return number, unit
+
+
+def dir_size(folder):
     size = 0
-    for dirpath, _, files in os.walk(dir):
-        for f in files:
-            name = os.path.join(dirpath, f)
-            if not os.path.islink(name):
-                size += os.path.getsize(name)
+    try:
+        for item in os.listdir(folder):
+            path = os.path.join(folder, item)
+            try:
+                if os.path.isdir(path):
+                    size += dir_size(path)
+                else:
+                    size += os.path.getsize(path)
+            except FileNotFoundError:
+                size += os.path.getsize(path)
+    except PermissionError:
+        pass
     return size
 
 
@@ -27,9 +48,11 @@ def list_dir(args):
 
     result = []
     files = 0
-    total_f = 0
+    totalFilesSize = 0
     dirs = 0
-    total_d = 0
+    totalDirsSize = 0
+
+    # looping through the files in the path to list them with specified options in cli
     for f in dirList:
         name = os.path.split(f)[1]
         if os.path.isdir(f):
@@ -37,33 +60,50 @@ def list_dir(args):
             if args.files:
                 continue
             size = dir_size(f)
-            total_d += size
+            totalDirsSize += size
             if args.size:
-                result.append(f'[{name}] - {round(size/1000, 2)} kB')
+                size, unit = bytes_parser(size)
+                result.append(f'[{name}] - {size} {unit}')
             else:
                 result.append(f'[{name}]')
         else:
             files += 1
             if args.folders:
                 continue
-            size = os.path.getsize(f)
-            total_f += size
+            try:
+                size = os.path.getsize(f)
+                totalFilesSize += size
+            except FileNotFoundError:
+                pass
             if args.size:
-                result.append(f'{name} - {round(size/1000, 2)} kB')
+                size, unit = bytes_parser(size)
+                result.append(f'{name} - {size} {unit}')
             else:
                 result.append(name)
-    total_z = round((total_f + total_d) / 1000, 2)
-    total_f = round(total_f/1000, 2)
-    total_d = round(total_d/1000, 2)
-    formated_result = '\n'.join(result)
+
+    # getting sizes of files and dirs
+    totalPathSize, totalPathUnit = bytes_parser(totalFilesSize + totalDirsSize)
+    totalFilesSize, totalFilesUnit = bytes_parser(totalFilesSize)
+    totalDirsSize, totalDirsUnit = bytes_parser(totalDirsSize)
+
+    # formating result message
+    formated_result = '\n'.join(result) if not args.wide else result
     info = f'''\
-Directory of: {os.path.abspath(args.path)} - {total_z} kB
+Directory of: {os.path.abspath(args.path)} - {totalPathSize} {totalPathUnit}
 
 {formated_result}
 
-{files} File(s) - {total_f} kB
-{dirs} Dir(s)  - {total_d} kB
 '''
+    # showing size of only files or dirs or both depending on cli option -f / -d
+    filesInfo = f'{files} File(s) - {totalFilesSize} {totalFilesUnit}\n'
+    dirInfo = f'{dirs} Dir(s)  - {totalDirsSize} {totalDirsUnit}\n'
+    if args.files:
+        dirInfo = ''
+    elif args.folders:
+        filesInfo = ''
+    else:
+        pass
+    info += filesInfo + dirInfo
     print(info)
     if args.output:
         with open(f'lsOutput.txt', 'w') as output:
@@ -86,9 +126,16 @@ def main():
         '-z', '--size', help="Display size in kilobytes", action='store_true')
     parser.add_argument(
         '-o', '--output', help="Stores result in an output text file", action='store_true')
+    parser.add_argument(
+        '-w', '--wide', help='outputs in a wide list format', action='store_true')
     args = parser.parse_args()
-    list_dir(args)
-    return 0
+    try:
+        list_dir(args)
+    except Exception as err:
+        print(err)
+        return 1
+    else:
+        return 0
 
 
 if __name__ == "__main__":
@@ -97,4 +144,3 @@ if __name__ == "__main__":
 
 # todo: make a recursive option with os.walk
 # todo: add tabular formating
-# todo: add function to format size accordingly
