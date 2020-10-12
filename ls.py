@@ -6,6 +6,20 @@ import sys
 from glob import glob as no_hidden
 
 
+def ls_walk(directory, tabs=0):
+    files = os.listdir(directory)
+    dirs = [files.pop(i)
+            for i, folder in enumerate(files) if os.path.isdir(os.path.join(directory, folder))]
+    print(' ' * tabs + f'[{os.path.split(directory)[1]}]:')
+    tabs += 1
+    for f in files:
+        tabbing = (' ' * (tabs-1)) + '|' + ' '
+        print(tabbing + f)
+    for folder in dirs:
+        path = os.path.join(directory, folder)
+        ls_walk(path, tabs)
+
+
 def bytes_parser(number, unit='Bytes'):
     units = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB']
     if unit not in units:
@@ -38,7 +52,9 @@ def dir_size(folder):
 
 
 def list_dir(args):
-
+    if args.walk:
+        ls_walk(args.path)
+        return
     if args.all:
         dirList = os.listdir(args.path)  # list with hidden items
         dirList = list(map(lambda d: os.path.join(args.path, d), dirList))
@@ -87,7 +103,7 @@ def list_dir(args):
     totalDirsSize, totalDirsUnit = bytes_parser(totalDirsSize)
 
     # formating result message
-    formated_result = '\n'.join(result) if not args.wide else result
+    formated_result = '\n'.join(result)
     info = f'''\
 Directory of: {os.path.abspath(args.path)} - {totalPathSize} {totalPathUnit}
 
@@ -114,7 +130,7 @@ def main():
     parser = argparse.ArgumentParser(
         description="List directory files and folders")
     parser.add_argument('path', nargs="?",
-                        help='Path to list items (default to current dir)', default='.')
+                        help='Path of directory to list (default to current dir)', default='.')
     parser.add_argument('-a', '--all',
                         help='Show all files including hidden ones', action='store_true')
     group = parser.add_mutually_exclusive_group()
@@ -127,7 +143,7 @@ def main():
     parser.add_argument(
         '-o', '--output', help="Stores result in an output text file", action='store_true')
     parser.add_argument(
-        '-w', '--wide', help='outputs in a wide list format', action='store_true')
+        '-w', '--walk', help='List all files, directories and subdirectorys of a path', action='store_true')
     args = parser.parse_args()
     try:
         list_dir(args)
@@ -140,7 +156,3 @@ def main():
 
 if __name__ == "__main__":
     exit(main())
-
-
-# todo: make a recursive option with os.walk
-# todo: add tabular formating
