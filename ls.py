@@ -4,6 +4,7 @@ import argparse
 from pprint import pprint
 import sys
 from glob import glob as no_hidden
+from tabulate import tabulate
 
 
 def ls_walk(directory, tabs=0):
@@ -82,7 +83,7 @@ def list_dir(args):
                 continue
             if args.size:
                 size, unit = bytes_parser(size)
-                result.append(f'[{name}] - {size} {unit}')
+                result.append([f'[{name}]', f'{size} {unit}'])
             else:
                 result.append(f'[{name}]')
         else:
@@ -96,7 +97,8 @@ def list_dir(args):
                 continue
             if args.size:
                 size, unit = bytes_parser(size)
-                result.append(f'{name} - {size} {unit}')
+                result.append([f'{name}', f'{size} {unit}'])
+
             else:
                 result.append(name)
 
@@ -106,7 +108,7 @@ def list_dir(args):
     totalDirsSize, totalDirsUnit = bytes_parser(totalDirsSize)
 
     # formating result message
-    formated_result = '\n'.join(result)
+    formated_result = '\n'.join(result) if not args.size else tabulate(result)
     info = f'''\
 Directory of: {os.path.abspath(args.path)} - {totalPathSize} {totalPathUnit}
 
