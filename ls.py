@@ -55,6 +55,9 @@ def list_dir(args):
     if args.walk:
         ls_walk(args.path)
         return
+    if args.bare:
+        os.system(f'dir /b {args.path}')
+        return
     if args.all:
         dirList = os.listdir(args.path)  # list with hidden items
         dirList = list(map(lambda d: os.path.join(args.path, d), dirList))
@@ -73,10 +76,10 @@ def list_dir(args):
         name = os.path.split(f)[1]
         if os.path.isdir(f):
             dirs += 1
-            if args.files:
-                continue
             size = dir_size(f)
             totalDirsSize += size
+            if args.files:
+                continue
             if args.size:
                 size, unit = bytes_parser(size)
                 result.append(f'[{name}] - {size} {unit}')
@@ -84,13 +87,13 @@ def list_dir(args):
                 result.append(f'[{name}]')
         else:
             files += 1
-            if args.folders:
-                continue
             try:
                 size = os.path.getsize(f)
                 totalFilesSize += size
             except FileNotFoundError:
                 pass
+            if args.folders:
+                continue
             if args.size:
                 size, unit = bytes_parser(size)
                 result.append(f'{name} - {size} {unit}')
@@ -144,6 +147,8 @@ def main():
         '-o', '--output', help="Stores result in an output text file", action='store_true')
     parser.add_argument(
         '-w', '--walk', help='List all files, directories and subdirectorys of a path', action='store_true')
+    parser.add_argument(
+        '-b', '--bare', help='Return only the names, no extra information', action='store_true')
     args = parser.parse_args()
     try:
         list_dir(args)
