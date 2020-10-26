@@ -28,3 +28,7 @@ command line program to parse css files, find duplicates or similarities in file
 <li>parse 2 css file and compare them</li>
 <li>parse all css files in a directory and list all similarities between all 2 files combinations</li>
 </ul>
+
+# venv
+
+Quickly create a python vertual enviornment if not existing or activates it if found
