@@ -32,3 +32,7 @@ command line program to parse css files, find duplicates or similarities in file
 # venv
 
 Quickly create a python vertual enviornment if not existing or activates it if found
+
+# jtree
+
+Outputs directory tree to a json file
