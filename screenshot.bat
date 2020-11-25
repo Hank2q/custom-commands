@@ -1,2 +1,2 @@
 @echo off
-if [%1]==[] ("%~dp0\screenshot.py") else ("%~dp0\screenshot.py" %1)
+if [%1]==[] (%USERPROFILE%\AppData\Local\Programs\Python\Python38-32\python.exe "%~dp0\screenshot.py") else (%USERPROFILE%\AppData\Local\Programs\Python\Python38-32\python.exe "%~dp0\screenshot.py" %1)
